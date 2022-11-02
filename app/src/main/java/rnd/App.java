@@ -3,12 +3,38 @@
  */
 package rnd;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 public class App {
     public String getGreeting() {
         return "Hello World!!!!!";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        long ts = 1666955825194l;
+
+        var startTime = createZonedFromMilli(ts);
+
+        Duration timeSpanToContimuePolling = Duration.parse("PT10M");
+        //timeSpanToContimuePolling = Duration.parse("P30D");
+        var endTime = startTime.plus(timeSpanToContimuePolling);
+        ZonedDateTime currDateTime = ZonedDateTime.now(ZoneId.systemDefault());
+        var remaining = (long) (endTime.toEpochSecond() - currDateTime.toEpochSecond()) / 60;
+
+        if (endTime.compareTo(currDateTime) > 0) {
+            System.out.println(new App().getGreeting());
+        }
+        System.out.println(startTime.toString());
+        System.out.println(endTime.toString());
+        System.out.println(currDateTime.toString());
+        System.out.println("remaining: " + remaining + " minutes");
     }
+
+    static ZonedDateTime createZonedFromMilli(long timestamp) {
+        return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault());
+    }
+
 }
